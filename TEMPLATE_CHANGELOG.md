@@ -5,6 +5,17 @@
 
 ---
 
+## v1.4.3 (2026-01-16)
+
+**Requirements Engineer: PROJECT_CONTEXT.md automatisch aktualisieren**
+- Neue Phase 5: Nach Feature-Specs → PROJECT_CONTEXT.md updaten
+- Aktualisiert: "Aktueller Status", "Features Roadmap", optional "Vision"
+- Neuer Checklist-Punkt: "PROJECT_CONTEXT.md aktualisiert"
+
+**Geändert:** `.claude/agents/requirements-engineer.md`
+
+---
+
 ## v1.4.2 (2026-01-16)
 
 **Frontend Developer: Design-Vorgaben abfragen**
