@@ -48,11 +48,17 @@ function SignupPageInner() {
   };
 
   return (
-    <div className="container flex items-center justify-center min-h-screen py-12">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12">
+      <div className="container max-w-md px-4 space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Create an account</h1>
-          <p className="text-muted-foreground mt-2">
+          <Link href="/" className="inline-flex items-center gap-2 mb-6">
+            <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold">PM</span>
+            </div>
+            <span className="font-bold text-2xl">Project Manager</span>
+          </Link>
+          <h1 className="text-4xl font-bold tracking-tight">Create an account</h1>
+          <p className="text-muted-foreground mt-3 text-lg">
             Get started with your free account today
           </p>
         </div>
