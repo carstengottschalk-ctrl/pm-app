@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { NavigationHeader } from "@/components/navigation-header";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "AI Coding Starter Kit",
-  description: "Built with AI Agent Team System",
+  title: "Project Manager",
+  description: "Project management app with time tracking and budget control",
 };
 
 export default function RootLayout({
@@ -14,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <NavigationHeader />
+        <main>{children}</main>
+        <Toaster />
       </body>
     </html>
   );
