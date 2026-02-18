@@ -13,7 +13,7 @@
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
 | PROJ-1 | User Authentication | Deployed | [Spec](PROJ-1-user-authentication.md) | 2026-02-18 |
-| PROJ-2 | Project Management | Deployed | [Spec](PROJ-2-project-management.md) | 2026-02-18 |
+| PROJ-2 | Project Management | In Review | [Spec](PROJ-2-project-management.md) | 2026-02-18 |
 | PROJ-3 | Time Tracking | Planned | [Spec](PROJ-3-time-tracking.md) | 2026-02-18 |
 | PROJ-4 | Budget Tracking | Planned | [Spec](PROJ-4-budget-tracking.md) | 2026-02-18 |
 

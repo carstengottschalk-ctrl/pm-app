@@ -1,5 +1,4 @@
 'use client';
 
-// Re-export the Supabase auth hook as the main auth hook
-// This allows us to switch between mock and real auth easily
-export { useSupabaseAuth as useAuth } from './use-supabase-auth';
+// Export the auth context hook as the main auth hook
+export { useAuth } from '@/contexts/auth-context';

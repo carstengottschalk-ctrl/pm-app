@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { NavigationHeader } from "@/components/navigation-header";
 import { Toaster } from "@/components/ui/toaster";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Project Manager",
@@ -16,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <NavigationHeader />
-        <main>{children}</main>
-        <Toaster />
+        <Providers>
+          <NavigationHeader />
+          <main>{children}</main>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
