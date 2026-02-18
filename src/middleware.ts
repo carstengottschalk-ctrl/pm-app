@@ -42,8 +42,11 @@ export async function middleware(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
+  console.log('Middleware: pathname:', request.nextUrl.pathname, 'session:', session ? 'Found' : 'Not found', session?.user?.email);
+
   // If user is not authenticated and trying to access a protected route
   if (!session && !isPublicRoute) {
+    console.log('Middleware: Redirecting to login from', request.nextUrl.pathname);
     const redirectUrl = new URL('/login', request.url);
     redirectUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);

@@ -32,8 +32,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
+    console.log('AuthProvider: Initializing auth...');
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('AuthProvider: Initial session:', session ? 'Found' : 'Not found', session?.user?.email);
       setAuthState(prev => ({
         ...prev,
         user: session?.user ?? null,
@@ -50,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event);
+      console.log('Auth state changed:', event, 'session:', session ? 'Yes' : 'No');
 
       try {
         setAuthState(prev => ({
@@ -134,16 +137,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
+    console.log('signIn: Attempting to sign in with email:', email);
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      console.log('signIn: Calling supabase.auth.signInWithPassword');
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      console.log('signIn: Supabase response:', { data, error });
 
+      if (error) {
+        console.error('signIn: Supabase error:', error);
+        throw error;
+      }
+
+      console.log('signIn: Success, user:', data.user?.email);
       return data.user;
     } catch (error) {
       // Check if it's an AbortError (navigation interrupted the request)
@@ -154,12 +165,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const authError = error as AuthError;
+      console.error('signIn: Auth error:', authError);
       setAuthState(prev => ({
         ...prev,
         error: authError.message || 'Invalid email or password',
       }));
       throw error;
     } finally {
+      console.log('signIn: Setting isLoading to false');
       setAuthState(prev => ({ ...prev, isLoading: false }));
     }
   };

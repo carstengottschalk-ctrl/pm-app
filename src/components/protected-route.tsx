@@ -13,8 +13,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
+  console.log('ProtectedRoute:', { user, isLoading });
+
   useEffect(() => {
+    console.log('ProtectedRoute useEffect:', { user, isLoading });
     if (!isLoading && !user) {
+      console.log('ProtectedRoute: redirecting to login');
       router.push('/login');
     }
   }, [user, isLoading, router]);
