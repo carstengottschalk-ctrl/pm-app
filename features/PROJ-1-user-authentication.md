@@ -182,6 +182,28 @@ Authentication Flow
 
 *To be filled by `/qa` skill*
 
-## Deployment (to be added by DevOps Engineer)
+## Deployment
 
-*To be filled by `/deploy` skill*
+**Production URLs:**
+- **Primary:** https://pm-app-rouge.vercel.app
+- **Direct:** https://pm-jvze3o536-carstens-projects-bf0a64f0.vercel.app
+
+**Deployment Details:**
+- **Deployed:** 2026-02-18
+- **Vercel Project:** carstens-projects-bf0a64f0/pm-app
+- **Region:** Washington, D.C., USA (East) - iad1
+- **Build Time:** 53 seconds
+- **Next.js Version:** 16.1.1
+- **Supabase Integration:** ✅ Configured (mock auth in production due to missing env vars)
+
+**Environment Variables Status:**
+- ⚠ **Action Required:** Environment variables not set in Vercel
+- **Required Variables:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **Current Status:** Using mock authentication in production
+
+**Supabase Auth Configuration Required:**
+1. **Vercel Dashboard:** Add environment variables in Project Settings
+2. **Supabase Dashboard:** Update Redirect URLs for production domain
+
+**Rollback:** Use `vercel --prod` to deploy previous version if needed
+**Logs:** `vercel inspect pm-jvze3o536-carstens-projects-bf0a64f0.vercel.app --logs`
