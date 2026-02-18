@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { LogOut, User, LayoutDashboard } from 'lucide-react';
+import { LogOut, User, LayoutDashboard, Folder } from 'lucide-react';
 
 export function NavigationHeader() {
   const { user, profile, signOut } = useAuth();
@@ -39,6 +39,12 @@ export function NavigationHeader() {
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
                 Dashboard
+              </Link>
+              <Link
+                href="/projects"
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                Projects
               </Link>
               <Link
                 href="/profile"
@@ -74,6 +80,12 @@ export function NavigationHeader() {
                   <Link href="/dashboard" className="w-full cursor-pointer">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/projects" className="w-full cursor-pointer">
+                    <Folder className="mr-2 h-4 w-4" />
+                    Projects
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

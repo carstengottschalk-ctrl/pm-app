@@ -215,17 +215,19 @@ export function useSupabaseAuth() {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // First verify the current password
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: authState.user?.email || '',
-        password: currentPassword,
-      });
+      // If we have a current password, verify it first (for regular password change)
+      if (currentPassword && authState.user?.email) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: authState.user.email,
+          password: currentPassword,
+        });
 
-      if (signInError) {
-        throw new Error('Current password is incorrect');
+        if (signInError) {
+          throw new Error('Current password is incorrect');
+        }
       }
 
-      // Update password
+      // Update password (works for both regular change and reset)
       const { data, error } = await supabase.auth.updateUser({
         password: newPassword,
       });

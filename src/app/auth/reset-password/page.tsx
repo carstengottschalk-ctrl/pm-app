@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useSupabaseAuth } from '@/hooks/use-supabase-auth';
+import { supabase } from '@/lib/supabase';
+import { AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -13,6 +16,18 @@ export default function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [success, setSuccess] = useState(false);
+  const [hasValidSession, setHasValidSession] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
+
+  useEffect(() => {
+    // Check if user has a valid session (from password reset token)
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setHasValidSession(!!session);
+      setIsCheckingSession(false);
+    };
+    checkSession();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +55,47 @@ export default function ResetPasswordPage() {
     }
   };
 
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="text-sm text-gray-600">Checking session...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!hasValidSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Invalid or Expired Link</CardTitle>
+            <CardDescription>
+              This password reset link is invalid or has expired.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Please request a new password reset link from the login page.
+              </AlertDescription>
+            </Alert>
+            <Button onClick={() => router.push('/forgot-password')} className="w-full mt-4">
+              Request New Reset Link
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -51,10 +107,13 @@ export default function ResetPasswordPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
-              You will be redirected to the login page in a few seconds...
-            </p>
-            <Button onClick={() => router.push('/login')} className="w-full">
+            <Alert className="bg-green-50 text-green-800 border-green-200">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription>
+                Your password has been changed successfully. You will be redirected to the login page.
+              </AlertDescription>
+            </Alert>
+            <Button onClick={() => router.push('/login')} className="w-full mt-4">
               Go to Login
             </Button>
           </CardContent>
@@ -108,9 +167,10 @@ export default function ResetPasswordPage() {
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
 
             <Button type="submit" className="w-full" disabled={isLoading}>

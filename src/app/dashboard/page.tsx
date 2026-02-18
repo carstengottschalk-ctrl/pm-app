@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ProtectedRoute } from '@/components/protected-route';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -74,9 +75,11 @@ export default function DashboardPage() {
                     Your most recent projects with status and progress
                   </CardDescription>
                 </div>
-                <Button>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  New Project
+                <Button asChild>
+                  <Link href="/projects">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    View All Projects
+                  </Link>
                 </Button>
               </div>
             </CardHeader>

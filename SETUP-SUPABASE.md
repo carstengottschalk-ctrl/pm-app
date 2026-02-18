@@ -25,11 +25,14 @@ NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 ```
 
-## 4. Run Database Migration
+## 4. Run Database Migrations
 
 1. Go to the SQL Editor in your Supabase dashboard
-2. Copy the contents of `supabase/migrations/2026021801_create_profiles_table.sql`
-3. Run the SQL to create the profiles table and set up RLS policies
+2. Run migrations in order:
+   - First: `supabase/migrations/2026021801_create_profiles_table.sql`
+   - Second: `supabase/migrations/202602181651_create_teams_and_projects_tables.sql`
+
+**Important:** Run migrations in this order. The projects migration depends on the profiles migration.
 
 ## 5. Configure Authentication Settings
 

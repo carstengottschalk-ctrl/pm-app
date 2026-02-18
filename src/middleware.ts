@@ -49,8 +49,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // If user is authenticated and trying to access a public route (except home)
-  if (session && isPublicRoute && request.nextUrl.pathname !== '/') {
+  // If user is authenticated and trying to access a public route (except home and reset password)
+  if (session && isPublicRoute && request.nextUrl.pathname !== '/' && request.nextUrl.pathname !== '/auth/reset-password') {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
