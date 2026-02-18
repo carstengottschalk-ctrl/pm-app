@@ -7,7 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -37,10 +41,12 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.0",
     "cmdk": "^1.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.562.0",
     "next": "^16.1.1",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
+    "react-day-picker": "^9.13.2",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.1",
     "sonner": "^2.0.7",
@@ -48,14 +54,23 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/testing-library__jest-dom": "^5.14.9",
+    "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "happy-dom": "^20.6.2",
+    "jsdom": "^28.1.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.18"
   }
 }
