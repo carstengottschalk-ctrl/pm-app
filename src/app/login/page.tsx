@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/components/auth-form';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -13,16 +13,35 @@ const loginSchema = z.object({
 });
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { signIn } = useAuth();
+  const searchParams = useSearchParams();
+  const { signIn, user, isLoading } = useAuth();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
-    await signIn(values.email, values.password);
-    setSuccessMessage('Login successful! Redirecting to dashboard...');
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 1500);
+    try {
+      // Show success message immediately
+      setSuccessMessage('Logging in...');
+
+      // Wait for sign in to complete
+      await signIn(values.email, values.password);
+
+      // Determine where to redirect
+      const redirectTo = searchParams.get('redirectedFrom') || '/dashboard';
+
+      // Redirect after successful sign in
+      window.location.href = redirectTo;
+    } catch (error) {
+      // Only show error if it's not an AbortError
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        // AbortError usually means navigation already happened
+        console.log('Login request was aborted due to navigation');
+        return;
+      }
+
+      // Show error message in the form
+      setSuccessMessage(null);
+      throw error; // Let AuthForm handle the error
+    }
   };
 
   return (
