@@ -1,33 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/components/auth-form';
 import { useAuth } from '@/hooks/use-auth';
 import dynamic from 'next/dynamic';
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(1, 'Password is required'),
 });
 
 function LoginPageInner() {
-  const searchParams = useSearchParams();
-  const { signIn, user, isLoading } = useAuth();
+  const { signIn } = useAuth();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [loginSuccess, setLoginSuccess] = useState(false);
 
-  useEffect(() => {
-    // After successful login, wait for user to be set in auth context
-    if (loginSuccess && user && !isLoading) {
-      console.log('LoginPage: User authenticated, redirecting...');
-      const redirectTo = searchParams.get('redirectedFrom') || '/dashboard';
-      // Use router.push instead of window.location to preserve cookies
-      window.location.href = redirectTo;
-    }
-  }, [loginSuccess, user, isLoading, searchParams]);
+  // Note: Middleware will automatically redirect authenticated users from /login to /dashboard
+  // No client-side redirect needed - just show success message
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     try {
@@ -37,9 +27,8 @@ function LoginPageInner() {
       // Wait for sign in to complete
       await signIn(values.email, values.password);
 
-      // Set login success flag - useEffect will handle redirect
-      setLoginSuccess(true);
-      setSuccessMessage('Login successful! Redirecting...');
+      // Show success message - middleware will handle redirect
+      setSuccessMessage('Login successful! Redirecting to dashboard...');
     } catch (error) {
       // Only show error if it's not an AbortError
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -50,7 +39,6 @@ function LoginPageInner() {
 
       // Show error message in the form
       setSuccessMessage(null);
-      setLoginSuccess(false);
       throw error; // Let AuthForm handle the error
     }
   };

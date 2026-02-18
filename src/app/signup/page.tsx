@@ -1,15 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/components/auth-form';
 import { useAuth } from '@/hooks/use-auth';
 import dynamic from 'next/dynamic';
 
 const signupSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -18,19 +17,11 @@ const signupSchema = z.object({
 });
 
 function SignupPageInner() {
-  const searchParams = useSearchParams();
-  const { signUp, user, isLoading } = useAuth();
+  const { signUp } = useAuth();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [signupSuccess, setSignupSuccess] = useState(false);
 
-  useEffect(() => {
-    // After successful signup, wait for user to be set in auth context
-    if (signupSuccess && user && !isLoading) {
-      console.log('SignupPage: User authenticated, redirecting...');
-      const redirectTo = searchParams.get('redirectedFrom') || '/dashboard';
-      window.location.href = redirectTo;
-    }
-  }, [signupSuccess, user, isLoading, searchParams]);
+  // Note: Middleware will automatically redirect authenticated users from /signup to /dashboard
+  // No client-side redirect needed - just show success message
 
   const handleSignup = async (values: z.infer<typeof signupSchema>) => {
     try {
@@ -40,9 +31,8 @@ function SignupPageInner() {
       // Wait for sign up to complete
       await signUp(values.email, values.password);
 
-      // Set signup success flag - useEffect will handle redirect
-      setSignupSuccess(true);
-      setSuccessMessage('Account created! Redirecting...');
+      // Show success message - middleware will handle redirect
+      setSuccessMessage('Account created! Redirecting to dashboard...');
     } catch (error) {
       // Only show error if it's not an AbortError
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -53,7 +43,6 @@ function SignupPageInner() {
 
       // Show error message in the form
       setSuccessMessage(null);
-      setSignupSuccess(false);
       throw error; // Let AuthForm handle the error
     }
   };
