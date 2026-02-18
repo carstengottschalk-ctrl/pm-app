@@ -18,8 +18,18 @@ const signupSchema = z.object({
 
 export default function SignupPage() {
   const searchParams = useSearchParams();
-  const { signUp } = useAuth();
+  const { signUp, user, isLoading } = useAuth();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+
+  useEffect(() => {
+    // After successful signup, wait for user to be set in auth context
+    if (signupSuccess && user && !isLoading) {
+      console.log('SignupPage: User authenticated, redirecting...');
+      const redirectTo = searchParams.get('redirectedFrom') || '/dashboard';
+      window.location.href = redirectTo;
+    }
+  }, [signupSuccess, user, isLoading, searchParams]);
 
   const handleSignup = async (values: z.infer<typeof signupSchema>) => {
     try {
@@ -29,11 +39,9 @@ export default function SignupPage() {
       // Wait for sign up to complete
       await signUp(values.email, values.password);
 
-      // Determine where to redirect
-      const redirectTo = searchParams.get('redirectedFrom') || '/dashboard';
-
-      // Redirect after successful sign up
-      window.location.href = redirectTo;
+      // Set signup success flag - useEffect will handle redirect
+      setSignupSuccess(true);
+      setSuccessMessage('Account created! Redirecting...');
     } catch (error) {
       // Only show error if it's not an AbortError
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -44,6 +52,7 @@ export default function SignupPage() {
 
       // Show error message in the form
       setSuccessMessage(null);
+      setSignupSuccess(false);
       throw error; // Let AuthForm handle the error
     }
   };

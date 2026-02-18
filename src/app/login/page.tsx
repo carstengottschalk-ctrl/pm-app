@@ -16,6 +16,17 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const { signIn, user, isLoading } = useAuth();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+
+  useEffect(() => {
+    // After successful login, wait for user to be set in auth context
+    if (loginSuccess && user && !isLoading) {
+      console.log('LoginPage: User authenticated, redirecting...');
+      const redirectTo = searchParams.get('redirectedFrom') || '/dashboard';
+      // Use router.push instead of window.location to preserve cookies
+      window.location.href = redirectTo;
+    }
+  }, [loginSuccess, user, isLoading, searchParams]);
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     try {
@@ -25,11 +36,9 @@ export default function LoginPage() {
       // Wait for sign in to complete
       await signIn(values.email, values.password);
 
-      // Determine where to redirect
-      const redirectTo = searchParams.get('redirectedFrom') || '/dashboard';
-
-      // Redirect after successful sign in
-      window.location.href = redirectTo;
+      // Set login success flag - useEffect will handle redirect
+      setLoginSuccess(true);
+      setSuccessMessage('Login successful! Redirecting...');
     } catch (error) {
       // Only show error if it's not an AbortError
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -40,6 +49,7 @@ export default function LoginPage() {
 
       // Show error message in the form
       setSuccessMessage(null);
+      setLoginSuccess(false);
       throw error; // Let AuthForm handle the error
     }
   };
