@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/components/auth-form';
 import { useAuth } from '@/hooks/use-auth';
+import dynamic from 'next/dynamic';
 
 const signupSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -16,7 +17,7 @@ const signupSchema = z.object({
   path: ["confirmPassword"],
 });
 
-export default function SignupPage() {
+function SignupPageInner() {
   const searchParams = useSearchParams();
   const { signUp, user, isLoading } = useAuth();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -116,3 +117,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(SignupPageInner), { ssr: false });

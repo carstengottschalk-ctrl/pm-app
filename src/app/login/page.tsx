@@ -6,13 +6,14 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/components/auth-form';
 import { useAuth } from '@/hooks/use-auth';
+import dynamic from 'next/dynamic';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
-export default function LoginPage() {
+function LoginPageInner() {
   const searchParams = useSearchParams();
   const { signIn, user, isLoading } = useAuth();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -116,3 +117,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(LoginPageInner), { ssr: false });
