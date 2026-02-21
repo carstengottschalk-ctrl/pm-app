@@ -1,8 +1,8 @@
 # PROJ-2: Project Management
 
-**Status:** 🟡 In Review
+**Status:** 🟢 Deployed
 **Created:** 2026-02-18
-**Last Updated:** 2026-02-18
+**Last Updated:** 2026-02-21
 **Dependencies:** PROJ-1 (User Authentication) - requires logged-in user
 
 ## User Stories
@@ -1215,9 +1215,10 @@ Reviewing the 27 acceptance criteria from the original spec:
 **Production URLs:**
 - **Primary:** https://pm-app-rouge.vercel.app
 - **Direct:** https://pm-jvze3o536-carstens-projects-bf0a64f0.vercel.app
+- **Latest Deployment (2026-02-21):** https://pm-looa00olg-carstens-projects-bf0a64f0.vercel.app
 
 **Deployment Details:**
-- **Deployed:** 2026-02-18
+- **Deployed:** 2026-02-18 (Initial), 2026-02-21 (Security updates)
 - **Vercel Project:** carstens-projects-bf0a64f0/pm-app
 - **Region:** Washington, D.C., USA (East) - iad1
 - **Build Time:** ~5 seconds (Next.js 16.1.1 with Turbopack)
