@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, AlertCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,8 +25,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { useProjects } from '@/hooks/use-projects';
 
 // Define the form schema
 const projectFormSchema = z.object({
@@ -45,6 +47,7 @@ interface ProjectFormProps {
   onCancel: () => void;
   isSubmitting?: boolean;
   submitButtonText?: string;
+  excludeProjectId?: string; // For edit mode, exclude current project from duplicate check
 }
 
 export function ProjectForm({
@@ -53,8 +56,12 @@ export function ProjectForm({
   onCancel,
   isSubmitting = false,
   submitButtonText = 'Create Project',
+  excludeProjectId,
 }: ProjectFormProps) {
   const [dateError, setDateError] = useState<string | null>(null);
+  const [duplicateNameError, setDuplicateNameError] = useState<string | null>(null);
+  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
+  const { checkDuplicateName } = useProjects();
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema) as any,
@@ -64,6 +71,38 @@ export function ProjectForm({
       estimated_budget: 0,
     },
   });
+
+  // Watch for name changes to check for duplicates
+  const projectName = form.watch('name');
+
+  useEffect(() => {
+    const checkDuplicate = async () => {
+      if (!projectName || projectName.trim().length < 1) {
+        setDuplicateNameError(null);
+        return;
+      }
+
+      // Debounce the duplicate check
+      setIsCheckingDuplicate(true);
+      try {
+        const isDuplicate = await checkDuplicateName(projectName, excludeProjectId);
+        if (isDuplicate) {
+          setDuplicateNameError(`A project with the name "${projectName}" already exists in your team. Consider using a unique name.`);
+        } else {
+          setDuplicateNameError(null);
+        }
+      } catch (error) {
+        // If the API fails, we'll still validate on submit
+        console.error('Failed to check duplicate name:', error);
+        setDuplicateNameError(null);
+      } finally {
+        setIsCheckingDuplicate(false);
+      }
+    };
+
+    const timeoutId = setTimeout(checkDuplicate, 500); // Debounce for 500ms
+    return () => clearTimeout(timeoutId);
+  }, [projectName, checkDuplicateName, excludeProjectId]);
 
   const handleSubmit = async (data: ProjectFormValues) => {
     // Validate that end date is after start date (strictly after)
@@ -77,7 +116,27 @@ export function ProjectForm({
       return;
     }
 
+    // Check for duplicate name one more time before submitting
+    if (data.name.trim()) {
+      try {
+        const isDuplicate = await checkDuplicateName(data.name, excludeProjectId);
+        if (isDuplicate) {
+          setDuplicateNameError(`A project with the name "${data.name}" already exists in your team. Please choose a different name.`);
+          toast({
+            title: 'Duplicate Project Name',
+            description: `A project with the name "${data.name}" already exists in your team.`,
+            variant: 'destructive',
+          });
+          return;
+        }
+      } catch (error) {
+        // If the API fails, we'll let the backend handle the validation
+        console.error('Failed to check duplicate name before submit:', error);
+      }
+    }
+
     setDateError(null);
+    setDuplicateNameError(null);
     await onSubmit(data);
   };
 
@@ -91,7 +150,18 @@ export function ProjectForm({
             <FormItem>
               <FormLabel>Project Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter project name" {...field} />
+                <div className="relative">
+                  <Input
+                    placeholder="Enter project name"
+                    {...field}
+                    className={duplicateNameError ? "border-amber-500 focus-visible:ring-amber-500" : ""}
+                  />
+                  {isCheckingDuplicate && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                </div>
               </FormControl>
               <FormDescription>
                 Choose a descriptive name for your project
@@ -100,6 +170,15 @@ export function ProjectForm({
             </FormItem>
           )}
         />
+
+        {duplicateNameError && (
+          <Alert className="border-amber-500 bg-amber-50 text-amber-800 [&>svg]:text-amber-600">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {duplicateNameError}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <FormField
           control={form.control}
@@ -228,10 +307,13 @@ export function ProjectForm({
                   <Input
                     type="number"
                     placeholder="0.00"
+                    step="0.01"
+                    min="0"
                     className="pl-8"
                     {...field}
                     onChange={(e) => {
                       const value = e.target.value === '' ? '0' : e.target.value;
+                      // Parse as float to keep decimal places
                       field.onChange(parseFloat(value) || 0);
                     }}
                   />

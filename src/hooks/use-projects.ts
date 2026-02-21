@@ -43,7 +43,7 @@ export function useProjects() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch projects');
+        throw new Error(errorData.error || 'Failed to fetch projects.');
       }
 
       const data = await response.json();
@@ -326,6 +326,29 @@ export function useProjects() {
     }
   }, []);
 
+  // Check if project name is duplicate
+  const checkDuplicateName = useCallback(async (name: string, excludeId?: string) => {
+    try {
+      const params = new URLSearchParams();
+      params.append('name', name);
+      if (excludeId) params.append('excludeId', excludeId);
+
+      const response = await fetch(`/api/projects/check-duplicate?${params.toString()}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to check duplicate name');
+      }
+
+      const data = await response.json();
+      return data.isDuplicate;
+    } catch (err) {
+      // If the API fails, we'll still validate on submit
+      console.error('Failed to check duplicate name:', err);
+      return false;
+    }
+  }, []);
+
   return {
     projects,
     isLoading,
@@ -337,5 +360,6 @@ export function useProjects() {
     archiveProject,
     deleteProject,
     fetchProjectStats,
+    checkDuplicateName,
   };
 }

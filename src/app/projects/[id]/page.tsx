@@ -78,9 +78,9 @@ export default function ProjectDetailPage() {
   const createdDate = typeof project.created_at === 'string' ? new Date(project.created_at) : project.created_at;
   const updatedDate = typeof project.updated_at === 'string' ? new Date(project.updated_at) : project.updated_at;
 
-  // Calculate project duration in days
+  // Calculate project duration in days (0 for same-day projects)
   const durationInMs = endDate.getTime() - startDate.getTime();
-  const durationInDays = Math.ceil(durationInMs / (1000 * 60 * 60 * 24));
+  const durationInDays = Math.max(0, Math.round(durationInMs / (1000 * 60 * 60 * 24)));
 
   // Get status badge color
   const getStatusBadge = (status: Project['status']) => {
@@ -101,8 +101,8 @@ export default function ProjectDetailPage() {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -312,7 +312,11 @@ export default function ProjectDetailPage() {
                     <div>
                       <div className="font-medium">Days Remaining</div>
                       <div className="text-sm text-muted-foreground">
-                        {Math.max(0, Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days
+                        {Date.now() > endDate.getTime() ? (
+                          'Completed'
+                        ) : (
+                          `${Math.max(0, Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days`
+                        )}
                       </div>
                     </div>
                     <Badge variant="outline">
@@ -420,6 +424,7 @@ export default function ProjectDetailPage() {
                 onCancel={() => setIsEditing(false)}
                 isSubmitting={isLoading}
                 submitButtonText="Update Project"
+                excludeProjectId={project.id}
               />
             )}
           </DialogContent>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { z } from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AuthForm } from '@/components/auth-form';
 import { useAuth } from '@/hooks/use-auth';
 import dynamic from 'next/dynamic';
@@ -18,10 +19,11 @@ const signupSchema = z.object({
 
 function SignupPageInner() {
   const { signUp } = useAuth();
+  const router = useRouter();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Note: Middleware will automatically redirect authenticated users from /signup to /dashboard
-  // No client-side redirect needed - just show success message
+  // Note: We need client-side redirect after successful signup
+  // Middleware should handle redirect but we add client-side redirect as fallback
 
   const handleSignup = async (values: z.infer<typeof signupSchema>) => {
     try {
@@ -31,8 +33,14 @@ function SignupPageInner() {
       // Wait for sign up to complete
       await signUp(values.email, values.password);
 
-      // Show success message - middleware will handle redirect
+      // Show success message
       setSuccessMessage('Account created! Redirecting to dashboard...');
+
+      // Client-side redirect to dashboard
+      // Add small delay to show success message
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
     } catch (error) {
       // Only show error if it's not an AbortError
       if (error instanceof DOMException && error.name === 'AbortError') {

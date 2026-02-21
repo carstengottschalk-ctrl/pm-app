@@ -400,4 +400,36 @@ export class ProjectsService {
 
     return counts;
   }
+
+  /**
+   * Check if a project name is duplicate for the current user
+   */
+  static async checkDuplicateName(name: string, excludeId?: string) {
+    // Get current user's session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error('User not authenticated');
+    }
+
+    // Get user's personal team
+    const { data: teamData, error: teamError } = await supabase
+      .from('team_members')
+      .select('team_id')
+      .eq('user_id', session.user.id)
+      .eq('role', 'owner')
+      .single();
+
+    if (teamError) {
+      console.error('Error fetching user team:', teamError);
+      throw new Error('Failed to find user team. Please try again.');
+    }
+
+    // Check for duplicate project name within the team
+    return await this.checkDuplicateProjectName(
+      sanitizeInput(name),
+      teamData.team_id,
+      session.user.id,
+      excludeId
+    );
+  }
 }
