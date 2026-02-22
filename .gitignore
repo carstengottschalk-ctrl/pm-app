@@ -40,3 +40,12 @@ next-env.d.ts
 
 #mcp
 .mcp.json
+
+# Development scripts and test utilities
+TEST-USER-README.md
+create-mock-user.js
+create-test-user.js
+mock-user-setup.html
+src/lib/dev-auth.ts
+test-api-auth.js
+.env.local.backup
