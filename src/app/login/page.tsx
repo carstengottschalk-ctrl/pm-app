@@ -33,9 +33,9 @@ function LoginPageInner() {
       setSuccessMessage('Login successful! Redirecting to dashboard...');
 
       // Client-side redirect to dashboard
-      // Add small delay to show success message and allow auth context to update
+      // Use window.location.href for a full page reload to ensure auth context is properly initialized
       setTimeout(() => {
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       }, 1000);
     } catch (error) {
       // Only show error if it's not an AbortError
