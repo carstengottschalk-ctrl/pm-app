@@ -33,10 +33,10 @@ function LoginPageInner() {
       setSuccessMessage('Login successful! Redirecting to dashboard...');
 
       // Client-side redirect to dashboard
-      // Add small delay to show success message
+      // Add small delay to show success message and allow auth context to update
       setTimeout(() => {
         router.push('/dashboard');
-      }, 500);
+      }, 1000);
     } catch (error) {
       // Only show error if it's not an AbortError
       if (error instanceof DOMException && error.name === 'AbortError') {
