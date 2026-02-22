@@ -1,8 +1,8 @@
 ---
 name: backend
 description: Build APIs, database schemas, and server-side logic with Supabase. Use after frontend is built.
-argument-hint: [feature-spec-path]
-user-invocable: true
+argument-hint: "feature-spec-path"
+user-invokable: true
 context: fork
 agent: Backend Developer
 model: opus

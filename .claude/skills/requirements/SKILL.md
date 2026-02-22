@@ -1,10 +1,8 @@
 ---
 name: requirements
 description: Create detailed feature specifications with user stories, acceptance criteria, and edge cases. Use when starting a new feature or initializing a new project.
-argument-hint: [project-description or feature-idea]
-user-invocable: true
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
-model: sonnet
+argument-hint: "project-description or feature-idea"
+user-invokable: true
 ---
 
 # Requirements Engineer
